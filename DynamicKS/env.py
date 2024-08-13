@@ -83,21 +83,18 @@ class KnapsackEnvironment:
 
         self.ct = 0
         self.total_profit = 0
-        self.items = np.random.uniform(size=self.total_items)
-        self.items = self.items / np.sum(self.items)  # normalize the items
+        self.items = np.random.poisson(lam=5.0, size=self.total_items) # sample items from uniform distribution
+        
+        self.items = self.items / np.sum(self.items)  # normalize the items to the total capacity
+        self.items = self.items * (self.alpha/2) # scale the items to the total capacity given by alpha
 
         self.current_b = self.alpha # initialize knapsack to a fraction of total item capacity given by alpha
 
-        # calculate the value pj of the items according to Chu and Beasley (1998)
-        self.p = self.items + 0.5 * np.random.uniform(size=self.total_items)
-        self.p = self.p / np.sum(self.p) # normalize the profits
+        # menor variabilidade na geração das recompensas
+        self.p = self.items + 0.1 * np.random.uniform(size=self.total_items)
+        self.p = self.p / np.sum(self.p)
 
         return self.observation # return the observation of the first state
-
-    
-
-
-
 
     
 

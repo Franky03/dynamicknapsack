@@ -1,13 +1,20 @@
 import numpy as np
+import matplotlib.pyplot as plt
+from collections import deque
 
 class LinearRegression:
     def __init__(self, knapsack_capacity, k_decision_points):
         self.knapsack_capacity = knapsack_capacity
         self.k_decision_points = k_decision_points
 
+        self.all_x = deque(maxlen=500)
+        self.all_y = deque(maxlen=500)
+
         # parameters of linear regression
         self.a = np.zeros(k_decision_points)
         self.b = 0.0
+
+        self.errors = []  # Armazena os erros
 
         # information required for online updates of linear regression
         self.n = 0
@@ -60,10 +67,11 @@ class LinearRegression:
 
                     if episode % evaluate_every_n == 0:
                         current_performance = self._evaluate(env, 100)
+                        mean_error = np.mean(self.errors)
                         print("Episode: {}\t Mean Profit {:.2f}\t "
-                              "Exploration Rate: {:.2f}.".format(episode,
-                                                                 current_performance,
-                                                                 current_exploration_rate))
+                          "Exploration Rate: {:.2f}\t Mean Error: {:.4f}".format(
+                              episode, current_performance, current_exploration_rate, mean_error))
+                        print("Length of x: ", len(self.all_x))
                     break
     def _update(self, observed_pds, collected_rewards):
         collected_rewards.pop(0)  # delete the first reward as it does not belong to a pds
@@ -79,6 +87,30 @@ class LinearRegression:
             grad = -2 * x * (y - y_hat)
             self.a -= 0.01 * grad[:-1]
             self.b -= 0.01 * grad[-1]
+
+            self.all_x.append((pds[0], x[pds[0]]))
+            self.all_y.append(y)
+
+            self.errors.append(abs(y - y_hat))
+
+    def plot_regression(self):
+        all_x = [x[1] for x in self.all_x]
+        all_y = self.all_y
+
+        plt.scatter(all_x, all_y, label="Dados Reais", alpha=0.6)
+
+        # Ajuste uma regressão linear diretamente aos dados observados
+        coeffs = np.polyfit(all_x, all_y, 1)  # Ajuste linear (1º grau)
+        x_line = np.linspace(min(all_x), max(all_x), 100)
+        y_line = coeffs[0] * x_line + coeffs[1]  # y = ax + b com os coeficientes ajustados
+        plt.plot(x_line, y_line, color='red', label="Ajuste Linear")
+
+        plt.xlabel("Capacidade Restante Normalizada (x)")
+        plt.ylabel("Recompensa Esperada (y)")
+        plt.title("Ajuste de Regressão Linear")
+        plt.legend()
+        plt.savefig("linear_regression.png")
+        
 
     def _evaluate(self, env, n_iterations):
         scores = [] 

@@ -26,11 +26,11 @@ def evaluate_policy(env, policy, n_instances):
 if __name__ == "__main__":
     np.random.seed(42)
 
-    DECISION_POINTS = 4
+    DECISION_POINTS = 5
     KNAPSACK_CAPACITY = 20
     POLICIES = ["GREEDY", "PARAMETRIC", "NON_PARAMETRIC"]
     POLICY = POLICIES[1]
-    N_EVAL_INSTANCES = 1000
+    N_EVAL_INSTANCES = 10000
     N_TRAIN_INSTANCES = int(1e5)
     
     # initialize knapsack environment
@@ -73,3 +73,5 @@ if __name__ == "__main__":
         scores = evaluate_policy(env=knapsack_problem, policy=linreg_policy, n_instances=N_EVAL_INSTANCES)
         print("Mean total profit over all instances {:.3f}.".format(np.mean(scores)))
         print("Maximum total profit over all instances {:.3f}.".format(np.max(scores)))
+
+        linreg_policy.plot_regression()
