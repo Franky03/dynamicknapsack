@@ -83,15 +83,15 @@ class KnapsackEnvironment:
 
         self.ct = 0
         self.total_profit = 0
-        self.items = np.random.poisson(lam=5.0, size=self.total_items) # sample items from uniform distribution
+        self.items = np.random.uniform(size=self.total_items) # sample items from uniform distribution
         
         self.items = self.items / np.sum(self.items)  # normalize the items to the total capacity
-        self.items = self.items * (self.alpha/2) # scale the items to the total capacity given by alpha
+        self.items = self.items * (self.alpha/1.2) # scale the items to the total capacity given by alpha
 
         self.current_b = self.alpha # initialize knapsack to a fraction of total item capacity given by alpha
 
         # menor variabilidade na geração das recompensas
-        self.p = self.items + 0.1 * np.random.uniform(size=self.total_items)
+        self.p = self.items + 0.1 * np.random.poisson(lam=7.0, size=self.total_items)
         self.p = self.p / np.sum(self.p)
 
         return self.observation # return the observation of the first state

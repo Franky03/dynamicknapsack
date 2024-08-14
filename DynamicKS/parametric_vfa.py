@@ -7,8 +7,8 @@ class LinearRegression:
         self.knapsack_capacity = knapsack_capacity
         self.k_decision_points = k_decision_points
 
-        self.all_x = deque(maxlen=500)
-        self.all_y = deque(maxlen=500)
+        self.all_x = deque(maxlen=300)
+        self.all_y = deque(maxlen=300)
 
         # parameters of linear regression
         self.a = np.zeros(k_decision_points)
